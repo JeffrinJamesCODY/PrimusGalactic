@@ -12,40 +12,34 @@ turtle.register_shape("Enemy_Ship.gif")
 turtle.register_shape("Boss_Ship.gif") 
 turtle.register_shape("Laser_Bullet.gif")
 
-# ----------------- CONFIG -----------------
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 PLAYER_SPEED = 20
 PLAYER_BULLET_SPEED = 12
 PLAYER_FIRE_COOLDOWN = 6
-
 ENEMY_SPEED_Z = 0.18
 ENEMY_FIRE_COOLDOWN_MIN = 110
 ENEMY_FIRE_COOLDOWN_MAX = 160
 ENEMY_BULLET_SPEED = 6
-
 MAX_ENEMIES = 2
 RESPAWN_MIN = 1
 RESPAWN_MAX = 2
-
 BOSS_APPEAR_SCORE = 200
 BOSS_SPEED = 0.08
 BOSS_HEALTH = 30
-
 highest_score = 0
 
-# ----------------- WAV FILES -----------------
+
+# The system takes data from the folder such as Laser.wav and explosion.wav
 folder = os.path.dirname(os.path.abspath(__file__))
 laser_path = os.path.join(folder, "laser.wav")
 explosion_path = os.path.join(folder, "explosion.wav")
-
 def play_laser():
     winsound.PlaySound(laser_path, winsound.SND_ASYNC)
-
 def play_explosion():
     winsound.PlaySound(explosion_path, winsound.SND_ASYNC)
 
-# ----------------- WELCOME + PLAYER CARD -----------------
+
 def show_welcome_and_player_card():
     wn = turtle.Screen()
     wn.setup(SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -84,7 +78,7 @@ def show_welcome_and_player_card():
     time.sleep(3)
     wn.clearscreen()
 
-# ----------------- EXPLOSION FUNCTION -----------------
+
 def explosion(wn, x, y):
     exp = turtle.Turtle()
     exp.hideturtle()
@@ -102,7 +96,6 @@ def explosion(wn, x, y):
     exp.hideturtle()
     exp.clear()
 
-# ----------------- MAIN GAME -----------------
 def start_game():
     global highest_score
 
@@ -132,11 +125,11 @@ def start_game():
                 s.sety(310)
                 s.setx(random.randint(-400,400))
 
-    # Player
-    turtle.register_shape("player_ship", ((0,15),(10,-10),(0,-5),(-10,-10)))
+    
+    turtle.register_shape("player_ship", ((0,15),(10,-10),(0,-5),(-10,-10))) #The size of the player ship built using normal coordinates that fir the starfield background. 
     player = turtle.Turtle()
     player.penup()
-    player.shape("Player_Ship.gif")
+    player.shape("Player_Ship.gif") #The player ship gif was reduced in terms of shape by a large number externally to fit the shape of the player. 
     player.color("cyan")
     player.setheading(90)
     player.goto(0, -230)
@@ -153,7 +146,7 @@ def start_game():
     enemy_bullets = []
     bosses = []
 
-    # UI
+   
     score_t = turtle.Turtle()
     score_t.hideturtle()
     score_t.penup()
@@ -182,7 +175,7 @@ def start_game():
 
     update_ui()
 
-    # ----------------- ENEMY -----------------
+
     class Enemy:
         def __init__(self):
             self.t = turtle.Turtle()
@@ -222,8 +215,8 @@ def start_game():
             enemy_bullets.append(eb)
             play_laser()
 
-    # ----------------- BOSS -----------------
-    class Boss:
+    # ----------------- BOSS -----------------------------------------------------------------------------------------------------
+    class Boss: Boss ship algorithm was made using AI and my code due to many errors to the original boss algorithm, AI revised my code as my tkinter and collision game physics was pretty much wrong 
         def __init__(self):
             self.t = turtle.Turtle()
             self.t.penup()
@@ -254,11 +247,11 @@ def start_game():
                 play_laser()
             return self.t.ycor()>-150
 
-    # ----------------- COLLISION -----------------
+    
     def collided(t1,t2,d=30):
         return t1.distance(t2)<d
 
-    # ----------------- CONTROLS -----------------
+    
     def left(): player.setx(player.xcor()-PLAYER_SPEED)
     def right(): player.setx(player.xcor()+PLAYER_SPEED)
 
@@ -280,8 +273,8 @@ def start_game():
     wn.onkeypress(left,"Left")
     wn.onkeypress(right,"Right")
     wn.onkeypress(fire,"space")
-
-    # Spawn initial enemies
+-------------------------------------------------------------------------------------------------------------------
+    # Spawn initial enemies in random positions
     for _ in range(random.randint(1,2)):
         enemies.append(Enemy())
 
@@ -297,13 +290,13 @@ def start_game():
             if fire_timer<=0:
                 fire_ready=True
 
-        # Spawn enemies
+        # This spawns enemies randomly just after the player has shot down atleast 2 of them.
         if len(enemies)<MAX_ENEMIES:
             for _ in range(random.randint(RESPAWN_MIN,RESPAWN_MAX)):
                 if len(enemies)<MAX_ENEMIES:
                     enemies.append(Enemy())
 
-        # Spawn boss
+        # The boss enemy is spawned after a swarm of normal enemy ships are destroyed, it is spawned in a fixed coordinate. 
         if score>=BOSS_APPEAR_SCORE and len(bosses)==0:
             bosses.append(Boss())
 
@@ -317,11 +310,11 @@ def start_game():
                     e.alive=False
                     e.t.hideturtle()
                     explosion(wn,e.t.xcor(),e.t.ycor())
-                    score+=10
+                    score+=10 # Player will increase it's score by 10 when a enemy ship is shot down.
                     update_ui()
         enemies=alive
 
-        # Update bosses
+   
         alive_bosses=[]
         for b in bosses:
             if b.update():
@@ -334,7 +327,7 @@ def start_game():
                     update_ui()
         bosses=alive_bosses
 
-        # Player bullets
+        # Player bullets are shot from the player ship using speed that is proportional to the movement of the player ship.
         new_bullets=[]
         for b in bullets:
             b.sety(b.ycor()+PLAYER_BULLET_SPEED)
@@ -365,12 +358,12 @@ def start_game():
                 b.hideturtle()
         bullets=new_bullets
 
-        # Enemy bullets
+        # Enemy bullets are shot late from the enemy ships which looks like Yellow circles, the speed is decreased by a large number in order to give the player a upper hand
         new_enemy_bullets=[]
         for eb in enemy_bullets:
             eb.sety(eb.ycor()-ENEMY_BULLET_SPEED)
     
-            if eb.ycor() < -330:
+            if eb.ycor() < -330: # y coordinates of the enemy ship is adjusted to give the enemy ships a 3d scale as soon as they spawn randomly after a swarm is destroyed. 
                 eb.hideturtle()
             elif not invincible and collided(eb,player,35):
                 player_health -= 10
@@ -384,7 +377,7 @@ def start_game():
 
         enemy_bullets = new_enemy_bullets
 
-        # Invincibility
+        # Invincibility is given to the player ship in order dodge bullets to give an upper hand
         if invincible:
             inv_timer-=1
             if inv_timer%4<2:
@@ -404,6 +397,5 @@ def start_game():
     show_welcome_and_player_card()
     start_game()
 
-# RUN 
-show_welcome_and_player_card()
-start_game()
+show_welcome_and_player_card() # runs the final game by showing welcome and player card
+start_game() # the starfield begans
