@@ -34,19 +34,19 @@ highest_score = 0
 folder = os.path.dirname(os.path.abspath(__file__))
 laser_path = os.path.join(folder, "laser.wav")
 explosion_path = os.path.join(folder, "explosion.wav")
-def play_laser():
+def play_laser(): #plays the laser sound file which was converted into a wav from MP3
     winsound.PlaySound(laser_path, winsound.SND_ASYNC)
 def play_explosion():
     winsound.PlaySound(explosion_path, winsound.SND_ASYNC)
 
 
-def show_welcome_and_player_card():
+def show_welcome_and_player_card(): #a welcome card is implemented as the game is ran by the player, it will be the first element the player will experience.
     wn = turtle.Screen()
     wn.setup(SCREEN_WIDTH, SCREEN_HEIGHT)
     wn.bgcolor("black")
-    wn.title("Primus Galactic")
+    wn.title("Primus Galactic") #Decided to keep the game's title as Primus Galactic because of my alias.
     
-    # Welcome title
+    # Welcome title runs for about approximately 2-3 seconds till the player is asked a game name to implement into the Player Card
     welcome = turtle.Turtle()
     welcome.hideturtle()
     welcome.penup()
@@ -56,16 +56,16 @@ def show_welcome_and_player_card():
     time.sleep(2)
     welcome.clear()
     
-    # Ask for player name
+    # player is asked for a alias to use for the game.
     player_name = wn.textinput("Enter your name", "Commander, what is your name?")
-    if not player_name:
+    if not player_name: #if player does not give any name, then the system will automatically choose 'Unknown' to continue with
         player_name = "Unknown"
 
     # Player card display
     card = turtle.Turtle()
     card.hideturtle()
     card.penup()
-    card.color("white")
+    card.color("white") #colour of all the components in the player card.
     card.goto(-SCREEN_WIDTH//2 + 20, -SCREEN_HEIGHT//2 + 50)  # right side
     
     card.write(f"--- Player Card ---\n"
@@ -79,13 +79,13 @@ def show_welcome_and_player_card():
     wn.clearscreen()
 
 
-def explosion(wn, x, y):
+def explosion(wn, x, y): #Explosion effects for all boss, enemies and player ship after they're destroyed and all health is taken - 100.
     exp = turtle.Turtle()
     exp.hideturtle()
     exp.penup()
     exp.goto(x, y)
     play_explosion()
-    colors = ["yellow", "orange", "red"]
+    colors = ["yellow", "orange", "red"] #Colour vectors that is in a different threat scale where red is the final destruction, orange is critical and yellow is the normal hit.
     for size in range(6,0,-1):
         exp.clear()
         exp.color(random.choice(colors))
@@ -165,7 +165,7 @@ def start_game():
     best_t.color("gold")
     best_t.goto(200,260)
 
-    def update_ui():
+    def update_ui(): # UI is updated after the player is destroyed -100 to make a new round for another player to play and beat existing score.
         score_t.clear()
         health_t.clear()
         best_t.clear()
@@ -248,7 +248,8 @@ def start_game():
             return self.t.ycor()>-150
 
     
-    def collided(t1,t2,d=30):
+    def collided(t1,t2,d=30): #Collision Physics of the BOSS enemy, the enemy ships will not be hit if it is overlapping the boss ship meaning it's protected.
+        #the collision is to a certain point near the boss ship's level.
         return t1.distance(t2)<d
 
     
