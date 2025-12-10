@@ -6,7 +6,7 @@ import os
 import pygame
 import cv2
 
-# Register
+# all the turtle registers needed for the graphics.
 turtle.register_shape("Player_Ship.gif")
 turtle.register_shape("Enemy_Ship.gif")
 turtle.register_shape("Boss_Ship.gif") 
